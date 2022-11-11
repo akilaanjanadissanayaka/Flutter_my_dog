@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -20,7 +21,7 @@ class _AddDogState extends State<AddDog> {
   TextEditingController _controllerLocation = TextEditingController();
   TextEditingController _controllercontact = TextEditingController();
   TextEditingController _controllerimg = TextEditingController();
-
+  TextEditingController _controllerupload = TextEditingController();
   GlobalKey<FormState> key = GlobalKey();
 
   // create a collection ref
@@ -47,6 +48,32 @@ class _AddDogState extends State<AddDog> {
       // print image url when complete upload
       print("url->" + imageUrl);
     } catch (error) {}
+  }
+
+  // add dog details
+  Future AddDetails() async {
+    // prevent upload post without image
+    if (imageUrl.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please upload an image')));
+      return;
+    }
+    CollectionReference collectionReference =
+        await FirebaseFirestore.instance.collection("Dogs");
+
+    Map<String, String> dogList = {
+      "location": _controllerLocation.text,
+      "contact": _controllercontact.text,
+      "img": imageUrl,
+      "mail": email
+    };
+
+    collectionReference.add(dogList).whenComplete(() => {
+          _controllerLocation.text = "",
+          _controllercontact.text = "",
+          imageUrl = "",
+          print("Dog added successfully")
+        });
   }
 
   // Get email from SharedPreferences
@@ -139,30 +166,7 @@ class _AddDogState extends State<AddDog> {
                               icon: const Icon(Icons.camera_alt)),
                           ElevatedButton(
                               onPressed: () async {
-                                // prevent upload post without image
-                                if (imageUrl.isEmpty) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content:
-                                              Text('Please upload an image')));
-                                  return;
-                                }
-
-                                // Map and inter data to firestore
-                                Map<String, String> dogList = {
-                                  "location": _controllerLocation.text,
-                                  "contact": _controllercontact.text,
-                                  "img": imageUrl,
-                                  "mail": email
-                                };
-                                _reference.add(dogList).then((value) => {
-                                      print("Dog added"),
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => HomePage()),
-                                      )
-                                    });
+                                AddDetails();
                               },
                               child: const Text('Submit'))
                         ],

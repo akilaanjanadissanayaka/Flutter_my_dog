@@ -15,7 +15,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  var currentPage = DrawerSections.AddDog;
+  var currentPage = DrawerSections.DogSociety;
 
   // sign out function
   exitfunc() async {

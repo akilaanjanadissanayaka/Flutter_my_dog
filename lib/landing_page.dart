@@ -20,9 +20,15 @@ class _landingState extends State<landing> {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
+            print(
+                "==================================home page==========================================");
+            print(snapshot.data);
             return HomePage();
           } else {
-            return fireauth();
+            print(
+                "==================================fireauth==========================================");
+            print(snapshot.data);
+            return const fireauth();
           }
         },
       ),

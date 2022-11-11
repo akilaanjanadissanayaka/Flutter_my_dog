@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_application_3/Customer/Notes/updatenode.dart';
+import 'package:flutter_application_3/Customer/navbar.dart';
 import 'package:flutter_application_3/Database.dart';
 
 class NotesPage extends StatefulWidget {
@@ -10,8 +10,11 @@ class NotesPage extends StatefulWidget {
 }
 
 class _NotesPageState extends State<NotesPage> {
+  String id = "";
   String title = "";
   String description = "";
+  final TitleController = TextEditingController();
+  final desController = TextEditingController();
   @override
   void initState() {
     // fetch Notes data when initial state
@@ -43,8 +46,14 @@ class _NotesPageState extends State<NotesPage> {
       "NoteDesc": description
     };
 
-    collectionReference.add(todoList).whenComplete(
-        () => {fetchlistMyMemories(), print("Note added successfully")});
+    collectionReference.add(todoList).whenComplete(() => {
+          fetchlistMyMemories(),
+          print("Note added successfully"),
+          // Navigator.push(
+          //   context,
+          //   // MaterialPageRoute(builder: (context) => HomePage()),
+          // )
+        });
   }
 
   // To Delete memory
@@ -94,20 +103,87 @@ class _NotesPageState extends State<NotesPage> {
                                 icon: const Icon(Icons.edit),
                                 color: Theme.of(context).primaryColor,
                                 onPressed: () async {
-                                  String refresh = await Navigator.push(
-                                      context,
-                                      // pass memory id,title & description
-                                      // to update page
-                                      MaterialPageRoute(
-                                          builder: (_) => UpdateRecord(
-                                                id: mynotes[index]["id"],
-                                                Title: mynotes[index]
-                                                    ["NoteTitle"],
-                                                Des: mynotes[index]["NoteDesc"],
-                                              )));
-                                  if (refresh == 'refresh') {
-                                    fetchlistMyMemories();
-                                  }
+                                  setState(() {
+                                    id = mynotes[index]["id"];
+                                    TitleController.text =
+                                        mynotes[index]["NoteTitle"];
+                                    desController.text =
+                                        mynotes[index]["NoteDesc"];
+                                  });
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10)),
+                                          title:
+                                              const Text("Updating Memories"),
+                                          content: SingleChildScrollView(
+                                            child: Container(
+                                              width: 340,
+                                              height: 220,
+                                              child: Column(
+                                                children: [
+                                                  const SizedBox(
+                                                    height: 10,
+                                                  ),
+                                                  TextField(
+                                                    controller: TitleController,
+                                                    keyboardType:
+                                                        TextInputType.text,
+                                                    decoration:
+                                                        const InputDecoration(
+                                                      border:
+                                                          OutlineInputBorder(),
+                                                      labelText: 'Title',
+                                                      hintText: 'Enter title',
+                                                    ),
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 30,
+                                                  ),
+                                                  TextField(
+                                                    controller: desController,
+                                                    decoration:
+                                                        const InputDecoration(
+                                                      border:
+                                                          OutlineInputBorder(),
+                                                      labelText: 'Description',
+                                                      hintText:
+                                                          'Enter Description',
+                                                    ),
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 30,
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 30,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          actions: <Widget>[
+                                            TextButton(
+                                                style: TextButton.styleFrom(
+                                                  primary: Colors.blue,
+                                                ),
+                                                onPressed: () {
+                                                  // Edit note, call to database function
+                                                  Database()
+                                                      .EditNote(
+                                                          id,
+                                                          TitleController.text,
+                                                          desController.text)
+                                                      .then((value) =>
+                                                          fetchlistMyMemories());
+                                                  Navigator.pop(context);
+                                                },
+                                                child: const Text("Update"))
+                                          ],
+                                        );
+                                      });
                                 },
                               ),
                               const SizedBox(
