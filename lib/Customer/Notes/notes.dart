@@ -13,6 +13,7 @@ class _NotesPageState extends State<NotesPage> {
   String id = "";
   String title = "";
   String description = "";
+  final _formKey = GlobalKey<FormState>();
   final TitleController = TextEditingController();
   final desController = TextEditingController();
   @override
@@ -46,14 +47,13 @@ class _NotesPageState extends State<NotesPage> {
       "NoteDesc": description
     };
 
-    collectionReference.add(todoList).whenComplete(() => {
-          fetchlistMyMemories(),
-          print("Note added successfully"),
-          // Navigator.push(
-          //   context,
-          //   // MaterialPageRoute(builder: (context) => HomePage()),
-          // )
-        });
+    collectionReference
+        .add(todoList)
+        .whenComplete(() => {
+              fetchlistMyMemories(),
+              print("Note added successfully"),
+            })
+        .catchError((e) => print(e));
   }
 
   // To Delete memory
@@ -216,52 +216,72 @@ class _NotesPageState extends State<NotesPage> {
           showDialog(
               context: context,
               builder: (BuildContext context) {
-                return AlertDialog(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                  title: const Text("Add Note"),
-                  content: SingleChildScrollView(
-                    child: Container(
-                      width: 300,
-                      height: 150,
-                      child: Column(
-                        children: [
-                          TextField(
-                            onChanged: (String value) {
-                              title = value;
-                            },
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              hintText: 'Title',
+                return Form(
+                  key: _formKey,
+                  child: AlertDialog(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    title: const Text("Add Note"),
+                    content: SingleChildScrollView(
+                      child: Container(
+                        width: 300,
+                        height: 200,
+                        child: Column(
+                          children: [
+                            TextFormField(
+                              validator: (value) {
+                                //validate text feild, that's not empty
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter the Title';
+                                }
+                                return null;
+                              },
+                              onChanged: (String value) {
+                                title = value;
+                              },
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                hintText: 'Title',
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 10),
-                          TextField(
-                            onChanged: (String value) {
-                              description = value;
-                            },
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              hintText: 'Description',
+                            const SizedBox(height: 10),
+                            TextFormField(
+                              //validate text feild, that's not empty
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter the Description';
+                                }
+                                return null;
+                              },
+                              onChanged: (String value) {
+                                description = value;
+                              },
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                hintText: 'Description',
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
+                    actions: <Widget>[
+                      TextButton(
+                          style: TextButton.styleFrom(
+                            primary: Colors.blue,
+                          ),
+                          onPressed: () {
+                            // Validate returns true if the form is valid, or false otherwise.
+                            if (_formKey.currentState!.validate()) {
+                              setState(() {
+                                AddMemories();
+                              });
+                              Navigator.of(context).pop();
+                            }
+                          },
+                          child: const Text("Add"))
+                    ],
                   ),
-                  actions: <Widget>[
-                    TextButton(
-                        style: TextButton.styleFrom(
-                          primary: Colors.blue,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            AddMemories();
-                          });
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text("Add"))
-                  ],
                 );
               });
         },

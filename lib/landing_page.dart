@@ -22,12 +22,12 @@ class _landingState extends State<landing> {
           if (snapshot.hasData) {
             print(
                 "==================================home page==========================================");
-            print(snapshot.data);
+            // print(snapshot.data);
             return HomePage();
           } else {
             print(
                 "==================================fireauth==========================================");
-            print(snapshot.data);
+            // print(snapshot.data);
             return const fireauth();
           }
         },

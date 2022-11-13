@@ -20,9 +20,6 @@ getcookee() async {
   }
 }
 
-// create instance from Dogs collection
-CollectionReference _reference = FirebaseFirestore.instance.collection('Dogs');
-
 class _DogSocietyState extends State<DogSociety> {
   @override
   void initState() {
@@ -42,7 +39,7 @@ class _DogSocietyState extends State<DogSociety> {
         doglist = result;
       });
     }
-    print(doglist);
+    // print(doglist);
   }
 
   // Delete Dog post by post owners

@@ -47,7 +47,9 @@ class _AddDogState extends State<AddDog> {
       _controllerimg.text = "uploaded";
       // print image url when complete upload
       print("url->" + imageUrl);
-    } catch (error) {}
+    } catch (error) {
+      (e) => print(e);
+    }
   }
 
   // add dog details

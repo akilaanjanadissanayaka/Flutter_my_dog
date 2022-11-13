@@ -9,8 +9,12 @@ class Database {
     QuerySnapshot querySnapshot;
     List notelist = [];
     final uid = await FirebaseAuth.instance.currentUser?.uid;
-    querySnapshot =
-        await db.collection("Users").doc(uid).collection("MyNotes").get();
+    querySnapshot = await db
+        .collection("Users")
+        .doc(uid)
+        .collection("MyNotes")
+        .get()
+        .catchError((error) => print(error));
     for (var doc in querySnapshot.docs.toList()) {
       Map a = {
         "id": doc.id,
@@ -27,8 +31,12 @@ class Database {
     QuerySnapshot querySnapshot;
     List vaccinelist = [];
     final uid = await FirebaseAuth.instance.currentUser?.uid;
-    querySnapshot =
-        await db.collection("Vaccine").doc(uid).collection("MyVaccine").get();
+    querySnapshot = await db
+        .collection("Vaccine")
+        .doc(uid)
+        .collection("MyVaccine")
+        .get()
+        .catchError((error) => print(error));
     for (var doc in querySnapshot.docs.toList()) {
       Map a = {
         "id": doc.id,
@@ -63,7 +71,8 @@ class Database {
   Future readDogdetails() async {
     QuerySnapshot querySnapshot;
     List doglist = [];
-    querySnapshot = await db.collection("Dogs").get();
+    querySnapshot =
+        await db.collection("Dogs").get().catchError((error) => print(error));
     for (var doc in querySnapshot.docs.toList()) {
       Map a = {
         "id": doc.id,
